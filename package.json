@@ -1,0 +1,8 @@
+{
+  "name": "git",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/sambacha/tfmono.git",
+  "author": "sam <sam@freighttrust.com>",
+  "license": "MIT"
+}
