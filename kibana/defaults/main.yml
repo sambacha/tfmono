@@ -1,0 +1,13 @@
+---
+kibana_version: '7.6.2'
+kibana_cont_image: 'docker.elastic.co/kibana/kibana-oss:{{ kibana_version }}'
+kibana_cont_name: kibana
+kibana_cont_vol: '/docker/{{ kibana_cont_name }}'
+kibana_cont_port: 5601
+kibana_cont_uid: 1000
+kibana_host_uid: '{{ 100000 + kibana_cont_uid | int }}'
+
+# generic container options
+cont_state: started
+cont_recreate: false
+cont_restart: false

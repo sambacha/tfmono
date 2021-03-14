@@ -1,0 +1,7 @@
+server {
+  listen {{ nginx_metrics_nginx_status_port }};
+
+  location / {
+    stub_status;
+  }
+}

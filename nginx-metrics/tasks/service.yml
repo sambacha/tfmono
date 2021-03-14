@@ -1,0 +1,15 @@
+---
+- name: 'Create Unit file: {{ nginx_metrics_service_name }}'
+  template:
+    src: nginx-metrics.service.j2
+    dest: '/lib/systemd/system/{{ nginx_metrics_service_name }}.service'
+    mode: 0644
+
+- name: Reload systemctl
+  command: systemctl daemon-reload
+
+- name: 'Start service: {{ nginx_metrics_service_name }}'
+  service:
+    name: '{{ nginx_metrics_service_name }}.service'
+    state: restarted
+    enabled: true

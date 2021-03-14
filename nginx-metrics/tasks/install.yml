@@ -1,0 +1,23 @@
+---
+- name: Download binary tarball
+  get_url:
+    url: '{{ nginx_metrics_tarball_url }}'
+    dest: '/tmp/{{ nginx_metrics_tarball }}'
+    checksum: 'md5:{{ nginx_metrics_tarball_md5 }}'
+    mode: 0644
+
+- name: Unpack the tarball
+  unarchive:
+    src: '/tmp/{{ nginx_metrics_tarball }}'
+    dest: '{{ nginx_metrics_bin_dir }}'
+    remote_src: true
+
+- name: Adjust permissions of binary
+  file:
+    path: '{{ nginx_metrics_bin_path }}'
+    mode: 0755
+
+- name: Clean up after installation
+  file:
+    path: '/tmp/{{ nginx_metrics_tarball }}'
+    state: 'absent'

@@ -1,0 +1,17 @@
+---
+- name: 'Template status config: {{ nginx_metrics_service_name }}'
+  template:
+    src: nginx-metrics.conf.j2
+    dest: '/etc/nginx/sites-available/{{ nginx_metrics_service_name }}.conf'
+  notify: reload nginx
+
+- name: 'Symlink status config: {{ nginx_metrics_service_name }}'
+  file:
+    src: '/etc/nginx/sites-available/{{ nginx_metrics_service_name }}.conf'
+    dest: '/etc/nginx/sites-enabled/{{ nginx_metrics_service_name }}.conf'
+    state: link
+
+- name: Reload nginx
+  service:
+    name: 'nginx'
+    state: 'reloaded'

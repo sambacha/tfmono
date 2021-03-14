@@ -1,0 +1,54 @@
+---
+- name: Create directory for config files
+  file:
+    path: '{{ kibana_cont_vol }}/{{ item }}'
+    state: directory
+    owner: '{{ kibana_host_uid }}'
+    group: docker
+    recurse: true
+  with_items:
+    - config
+    - plugins
+
+- name: Create config files
+  template:
+    src: kibana.yml.j2
+    dest: '{{ kibana_cont_vol }}/config/kibana.yml'
+    owner: '{{ kibana_host_uid }}'
+    group: docker
+  register: kibana_config
+
+- name: Start container
+  docker_container:
+    name: '{{ kibana_cont_name }}'
+    image: '{{ kibana_cont_image }}'
+    pull: true
+    restart_policy: always
+    state: '{{ cont_state }}'
+    recreate: '{{ cont_recreate }}'
+    restart: '{{ kibana_config.changed | default(cont_restart) }}'
+    env:
+      NODE_OPTIONS: '--max-old-space-size=3072'
+      SERVER_NAME: '{{ kibana_domain }}'
+    links:
+      - '{{ es_lb_cont_name }}:{{ es_lb_cont_name }}'
+    ports:
+      - '127.0.0.1:{{ kibana_cont_port }}:{{ kibana_cont_port }}'
+    volumes:
+      - '{{ kibana_cont_vol }}/config:/usr/share/kibana/config'
+      - '{{ kibana_cont_vol }}/plugins:/usr/share/kibana/plugins'
+
+- name: Create Consul service definition
+  include_role: name=consul-service
+  vars:
+    consul_config_name: '{{ kibana_cont_name }}'
+    consul_services:
+      - name: '{{ kibana_cont_name }}'
+        tags: ['logging']
+        # we advertise the port with basic auth
+        port: '{{ kibana_cont_port }}'
+        checks:
+          - id: kibana-status
+            name: Kibana Healthcheck
+            type: http
+            http: 'http://localhost:{{ kibana_cont_port }}/api/status'

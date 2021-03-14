@@ -1,0 +1,102 @@
+---
+- name: Geth | Create container directories
+  file:
+    path: '{{ item }}'
+    owner: dockremap
+    group: docker
+    state: directory
+    recurse: true
+  with_items:
+    - '{{ geth_data_path }}'
+    - '{{ geth_keys_path }}'
+
+- name: Geth | Check if account file exists
+  stat: 
+    path: '{{ geth_account_json_file }}'
+  register: account_file
+  when: geth_account_json is not defined
+
+- name: Geth | Create password file
+  copy:
+    dest: '{{ geth_account_pass_file }}'
+    content: '{{ geth_account_pass | mandatory }}'
+    owner: dockremap
+    group: docker
+    mode: 0600
+
+- name: Geth | Write account JSON
+  copy:
+    dest: '{{ geth_account_json_file }}'
+    content: '{{ geth_account_json | mandatory }}'
+    owner: dockremap
+    group: docker
+    mode: 0640
+  when: >
+    geth_account_json is defined and
+    geth_account_json != ""
+
+- name: Geth | Generate account
+  when: >
+    geth_account_json is not defined and
+    geth_account_addr is not defined and
+    not account_file.stat.exists
+  block:
+    - name: Geth | Generate account JSON
+      docker_container:
+        name: '{{ geth_cont_name }}'
+        image: '{{ geth_cont_image }}'
+        pull: true
+        auto_remove: yes
+        command: |
+          account new
+          --keystore=/keys
+          --password=/keys/account.pass
+        volumes:
+          - '{{ geth_cont_vol }}/keys:/keys:rw'
+
+    - name: Geth | Delay finding account file
+      wait_for:
+        timeout: 2
+
+    - name: Geth | Find newly generate account file
+      find:
+        paths: '{{ geth_keys_path }}'
+        patterns: 'UTC*'
+        file_type: file
+      register: found_account_files
+
+    - name: Geth | Symlink generated account file
+      file:
+        src: '{{ found_account_files.files[0].path }}'
+        dest: '{{ geth_account_json_file }}'
+        owner: dockremap
+        group: docker
+        state: link
+
+- name: Geth | Save account address
+  slurp:
+    src: '{{ geth_account_json_file }}'
+  when: geth_account_json is not defined
+  register: geth_account
+
+- name: Geth | Extract account JSON
+  set_fact:
+    geth_account_json: '{{ (geth_account.content | b64decode | from_json) }}'
+  when: geth_account_json is not defined
+
+- name: Geth | Extract account address
+  set_fact:
+    geth_account_addr: '{{ geth_account_json["address"] }}'
+
+- name: Geth | Verify account data is available
+  assert:
+    that:
+      - geth_account_json is defined
+      - geth_account_addr is defined
+
+- name: Geth | Save account address to file
+  copy:
+    dest: '{{ geth_account_addr_file }}'
+    content: '{{ geth_account_addr | mandatory }}'
+    owner: dockremap
+    group: docker

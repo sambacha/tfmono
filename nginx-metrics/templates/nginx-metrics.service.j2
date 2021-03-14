@@ -1,0 +1,18 @@
+[Unit]
+Description="Exporting Nginx metrics to Prometheus"
+Documentation=https://github.com/nginxinc/nginx-prometheus-exporter
+Requires=nginx.service
+After=nginx.service
+
+[Service]
+User={{ nginx_metrics_service_user }}
+Group={{ nginx_metrics_service_user }}
+KillMode=process
+Restart=on-failure
+ExecStart={{ nginx_metrics_bin_path }} \
+            -nginx.timeout {{ nginx_metrics_scrape_timeout }} \
+            -web.listen-address '{{ nginx_metrics_listen_host }}:{{ nginx_metrics_listen_port }}' \
+            -nginx.scrape-uri http://localhost:{{ nginx_metrics_nginx_status_port }}
+
+[Install]
+WantedBy=multi-user.target

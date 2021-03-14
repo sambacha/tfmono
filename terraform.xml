@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tree>
+  <directory name="terraform/">
+    <directory name="alibaba">
+      <file name="main.tf"></file>
+      <file name="outputs.tf"></file>
+      <file name="variables.tf"></file>
+      <file name="versions.tf"></file>
+    </directory>
+    <directory name="aws">
+      <file name="main.tf"></file>
+      <file name="outputs.tf"></file>
+      <file name="variables.tf"></file>
+      <file name="versions.tf"></file>
+    </directory>
+    <directory name="digital-ocean">
+      <file name="README.md"></file>
+      <file name="main.tf"></file>
+      <file name="outputs.tf"></file>
+      <file name="variables.tf"></file>
+      <file name="versions.tf"></file>
+    </directory>
+    <directory name="google">
+      <file name="main.tf"></file>
+      <file name="outputs.tf"></file>
+      <file name="setup.ps1"></file>
+      <file name="variables.tf"></file>
+      <file name="versions.tf"></file>
+    </directory>
+    <directory name="multi-provider">
+      <file name="main.tf"></file>
+      <file name="outputs.tf"></file>
+      <file name="variables.tf"></file>
+      <file name="versions.tf"></file>
+    </directory>
+  </directory>
+  <report>
+    <directories>5</directories>
+    <files>22</files>
+  </report>
+</tree>

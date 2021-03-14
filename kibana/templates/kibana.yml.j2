@@ -1,0 +1,10 @@
+---
+server.name: "{{ hostname }}"
+server.host: "0"
+server.port: {{ kibana_cont_port }}
+server.ssl.enabled: false
+elasticsearch.hosts: "http://{{ es_lb_cont_name }}:{{ es_lb_api_port }}"
+# logging
+logging.quiet: true
+logging.silent: false
+logging.verbose: false

@@ -1,0 +1,20 @@
+---
+# the port on which Nginx hosts stats
+nginx_metrics_nginx_status_port: 9112
+
+# configuration for exporter
+nginx_metrics_scrape_timeout: '5s'
+nginx_metrics_listen_host: '0.0.0.0'
+nginx_metrics_listen_port: 9113
+
+# source for exporter binary
+nginx_metrics_version: '0.6.0'
+nginx_metrics_tarball: 'nginx-prometheus-exporter-{{ nginx_metrics_version }}-linux-amd64.tar.gz'
+nginx_metrics_tarball_md5: 'aef7a1a82cc331201917f0fc89e3909b'
+nginx_metrics_tarball_url: 'https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ nginx_metrics_version }}/{{ nginx_metrics_tarball }}'
+nginx_metrics_bin_dir: '/usr/local/bin'
+nginx_metrics_bin_path: '{{ nginx_metrics_bin_dir }}/nginx-prometheus-exporter'
+
+# service configuration
+nginx_metrics_service_name: 'nginx-metrics'
+nginx_metrics_service_user: 'www-data'
